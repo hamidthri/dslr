@@ -25,8 +25,26 @@ def read_csv(file_path):
         sys.exit(1)
     return headers, data
 
+
+def is_numeric_column(column):
+    for value in column:
+        if value == '' or value is None:
+            continue
+        try:
+            float(value)
+        except (ValueError, TypeError):
+            return False
+    return True
+
 def describe(file_path):
     headers, data = read_csv(file_path)
+    
+    numeric_headers = []
+    numeric_data = []
+    for i, column in enumerate(data):
+        if is_numeric_column(column):
+            numeric_headers.append(headers[i])
+            numeric_data.append(column)
     
 
 
