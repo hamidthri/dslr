@@ -68,6 +68,47 @@ def calculate_std(column):
     return (variance / count) ** 0.5 if count > 0 else 0
 
 
+def calculate_min(column):
+    min_value = None
+    for value in column:
+        if value == '' or value is None:
+            continue
+        if min_value is None or value < min_value:
+            min_value = value
+    return min_value
+
+def calculate_max(column):
+    max_value = None
+    for value in column:
+        if value == '' or value is None:
+            continue
+        if max_value is None or value > max_value:
+            max_value = value
+    return max_value
+
+def calculate_percentile(column, percentile):
+    valid_values = [value for value in column if value != '' and value is not None]
+    if not valid_values:
+        return None
+    
+    sorted_values = sorted(valid_values)
+    n = len(sorted_values)
+    
+    index = (n - 1) * (percentile / 100)
+    
+    if index.is_integer():
+        return sorted_values[int(index)]
+    
+    lower_index = int(index)
+    upper_index = lower_index + 1
+    
+    lower_value = sorted_values[lower_index]
+    upper_value = sorted_values[upper_index]
+    
+    fraction = index - lower_index
+    
+    return lower_value + (upper_value - lower_value) * fraction 
+
 def describe(file_path):
     headers, data = read_csv(file_path)
     
@@ -95,13 +136,19 @@ def describe(file_path):
                 value = calculate_mean(column)
             elif stat == "Std": 
                 value = calculate_std(column)
+            elif stat == "Min": 
+                value = calculate_min(column)
+            elif stat == "25%":
+                value = calculate_percentile(column, 25)
+            elif stat == "50%":
+                value = calculate_percentile(column, 50)
+            elif stat == "75%":
+                value = calculate_percentile(column, 75)
+            elif stat == "Max":
+                value = calculate_max(column)
                 
             print(f"{value:15.2f}", end="")
         print()
-    
-    
-    
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
