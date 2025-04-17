@@ -36,6 +36,38 @@ def is_numeric_column(column):
             return False
     return True
 
+
+
+def calculate_count(column):
+    count = 0
+    for value in column:
+        if value == '' or value is None:
+            continue
+        count += 1
+    return count
+
+def calculate_mean(column):
+    total = 0
+    count = 0
+    for value in column:
+        if value == '' or value is None:
+            continue
+        total += value
+        count += 1
+    return total / count if count > 0 else 0
+
+def calculate_std(column):
+    mean = calculate_mean(column)
+    variance = 0
+    count = 0
+    for value in column:
+        if value == '' or value is None:
+            continue
+        variance += (value - mean) ** 2
+        count += 1
+    return (variance / count) ** 0.5 if count > 0 else 0
+
+
 def describe(file_path):
     headers, data = read_csv(file_path)
     
@@ -45,6 +77,29 @@ def describe(file_path):
         if is_numeric_column(column):
             numeric_headers.append(headers[i])
             numeric_data.append(column)
+            
+    statistics = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+    # print the header
+    print(f"{'':25}", end="")
+    for header in numeric_headers:
+        print(f"{header:12}", end="")
+        
+    print()
+    
+    for stat in statistics:
+        print(f"{stat:15}", end="")
+        for column in numeric_data:
+            if stat == "Count":
+                value = calculate_count(column)
+            elif stat == "Mean":
+                value = calculate_mean(column)
+            elif stat == "Std": 
+                value = calculate_std(column)
+                
+            print(f"{value:15.2f}", end="")
+        print()
+    
+    
     
 
 
