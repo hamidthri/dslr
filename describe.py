@@ -25,31 +25,70 @@ def read_csv(file_path):
     return headers, data
 
 def compute_stats(values):
-    values = [v for v in values if v is not None]
-    if not values:
+    # Remove None values manually
+    cleaned = []
+    for v in values:
+        if v is not None:
+            cleaned.append(v)
+
+    # Manual count
+    count = 0
+    for _ in cleaned:
+        count += 1
+
+    if count == 0:
         return [0, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN']
 
-    count = len(values)
-    mean = sum(values) / count
-    sorted_vals = sorted(values)
+    # Manual sum
+    total = 0
+    for v in cleaned:
+        total += v
 
+    mean = total / count
+
+    # Manual min/max
+    min_val = cleaned[0]
+    max_val = cleaned[0]
+    for v in cleaned:
+        if v < min_val:
+            min_val = v
+        if v > max_val:
+            max_val = v
+
+    # Manual std (sample)
+    variance_sum = 0
+    for v in cleaned:
+        variance_sum += (v - mean) ** 2
+    std = (variance_sum / (count - 1)) ** 0.5 if count > 1 else 0
+
+    # Manual sort (Selection Sort)
+    for i in range(count):
+        min_index = i
+        for j in range(i + 1, count):
+            if cleaned[j] < cleaned[min_index]:
+                min_index = j
+        # Swap
+        cleaned[i], cleaned[min_index] = cleaned[min_index], cleaned[i]
+
+    # Manual percentile
     def percentile(p):
         k = (count - 1) * (p / 100)
         f = int(k)
-        c = min(f + 1, count - 1)
-        return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
+        c = f + 1 if f + 1 < count else f
+        fraction = k - f
+        return cleaned[f] + (cleaned[c] - cleaned[f]) * fraction
 
-    std = (sum((x - mean) ** 2 for x in values) / (count - 1)) ** 0.5 if count > 1 else 0
     return [
         count,
         mean,
         std,
-        min(values),
+        min_val,
         percentile(25),
         percentile(50),
         percentile(75),
-        max(values)
+        max_val
     ]
+
 
 def describe(file_path):
     headers, columns = read_csv(file_path)
