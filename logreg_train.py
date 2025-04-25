@@ -1,5 +1,6 @@
 import sys
 import csv
+import numpy as np
 
 def load_dataset(filename):
     try:
@@ -30,7 +31,59 @@ def load_dataset(filename):
     
     
 def preprocess_data(headers, rows, houses):
-    pass
+    non_feature_cols = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
+    feature_indices = []
+    feature_names = []
+    for i, header in enumerate(headers):
+        if header not in non_feature_cols:
+            feature_indices.append(i)
+            feature_names.append(header)
+    
+    X = []
+    for row in rows:
+        features = []
+        for idx in feature_indices:
+            try:
+                val = float(row[idx])
+                features.append(val)
+            except ValueError:
+                features.append(0.0)
+        X.append(features)
+    
+    # convert to numpy array
+    X = np.array(X)
+    # check for NaN values and replace them with mean of the column
+    for col in range(X.shape[1]):
+        col_mean = np.nanmean(X[:, col])
+        nan_indices = np.isnan(X[:, col])
+        X[nan_indices, col] = col_mean
+        
+    # normalize the data using z-score normalization
+    X_norm = np.zeros_like(X)    
+    feature_means = []
+    feature_stds = []
+    
+    for col in range(X.shape[1]):
+        col_mean = np.mean(X[:, col])
+        col_std = np.std(X[:, col])
+        std = std if col_std != 0 else 1
+        
+        X_norm[:, col] = (X[:, col] - col_mean) / std
+        feature_means.append(col_mean)
+        feature_stds.append(col_std)
+        
+    X_norm = np.hstack((np.ones(X_norm.shape[0]), X_norm), axis=1)
+    
+    unique_houses = sorted(set(houses))
+    
+    y_encoded = {}
+    for house in unique_houses:
+        y_encoded[house] = np.array([1 if h == house else 0 for h in houses])
+        
+    return X_norm, y_encoded, feature_names, feature_means, feature_stds, unique_houses
+    
+        
+    
 
 
 def main(train_file, output_file="model_weights.json"):
