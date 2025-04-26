@@ -128,8 +128,9 @@ def train_logestic_regression(X, y_encoded, unique_houses, learning_rate=0.01, n
     for house in unique_houses:
         y = y_encoded[house]
         theta = np.zeros(num_features)
-        
-        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations)        
+        print (f"Training for house: {house}")
+        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations)
+        print(f"Final cost for {house}: {costs[-1]}")    
         trained_models[house] = theta.tolist()
         
     return trained_models
@@ -147,7 +148,7 @@ def save_model(model, feature_names, feature_means, feature_stds, unique_houses,
     
     try:
         with open(output_file, 'w') as file:
-            json.dump(model_data, file)
+            json.dump(model_data, file, indent=4)
     except Exception as e:
         print(f"Error saving the model: {e}")
 
@@ -159,7 +160,7 @@ def main(train_file, output_file="model_weights.json"):
     print("Training the model...")
     trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000)
     
-    # save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
+    save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
     print(f"Model saved to {output_file}")
     
     
@@ -171,6 +172,6 @@ if __name__ == "__main__":
         sys.exit(1)
     
     train_file = sys.argv[1] if len(sys.argv) > 1 else "dataset_train.csv"
-    output_file = sys.argv[2] if len(sys.argv) > 2 else "model_weights.json"
+    output_file = sys.argv[2] if len(sys.argv) > 2 else "/Users/htaheri/Documents/GitHub/dslr/save/model_weights.json"
     
     main(train_file, output_file)
