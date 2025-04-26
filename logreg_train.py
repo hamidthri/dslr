@@ -81,14 +81,56 @@ def preprocess_data(headers, rows, houses):
         y_encoded[house] = np.array([1 if h == house else 0 for h in houses])
         
     return X_norm, y_encoded, feature_names, feature_means, feature_stds, unique_houses
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def compute_cost(X, y, theta):
+    m = len(y)
+    predictions = sigmoid(X @ theta)
+    cost = (-1 / m) * (y @ np.log(predictions) + (1 - y) @ np.log(1 - predictions))
+    return cost
+     
+def gradient_descent(X, y, theta, learning_rate=0.01, num_iterations=1000):
+    m = len(y)
+    costs = []
     
+    for i in range(num_iterations):
+        predictions = sigmoid(X @ theta)
+        errors = predictions - y
+        gradient = (1 / m) * (X.T @ errors)
+        theta -= learning_rate * gradient
+        cost = compute_cost(X, y, theta)
+        costs.append(cost)
         
+    return theta, costs
+           
+        
+def train_logestic_regression(X, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000):
+    num_features = X.shape[1]
+    trained_models = {}
+    
+    for house in unique_houses:
+        y = y_encoded[house]
+        theta = np.zeros(num_features)
+        
+        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations)
+        trained_models[house] = theta.tolist()
+        
+    return trained_models
     
 
 
 def main(train_file, output_file="model_weights.json"):
     headers, rows, houses = load_dataset(train_file)
     X_norm, y_encoded, feature_names, feature_means, feature_stds, unique_houses = preprocess_data(headers, rows, houses)
+    
+    # training
+    print("Training the model...")
+    trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000)
+    
+    save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
+    print(f"Model saved to {output_file}")
     
     
     
