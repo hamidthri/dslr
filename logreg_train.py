@@ -1,6 +1,7 @@
 import sys
 import csv
 import numpy as np
+import json
 
 def load_dataset(filename):
     try:
@@ -66,14 +67,13 @@ def preprocess_data(headers, rows, houses):
     for col in range(X.shape[1]):
         col_mean = np.mean(X[:, col])
         col_std = np.std(X[:, col])
-        std = std if col_std != 0 else 1
+        std = col_std if col_std != 0 else 1
         
         X_norm[:, col] = (X[:, col] - col_mean) / std
         feature_means.append(col_mean)
         feature_stds.append(col_std)
         
-    X_norm = np.hstack((np.ones(X_norm.shape[0]), X_norm), axis=1)
-    
+    X_norm = np.hstack((np.ones((X_norm.shape[0], 1)), X_norm))    
     unique_houses = sorted(set(houses))
     
     y_encoded = {}
@@ -90,8 +90,23 @@ def compute_cost(X, y, theta):
     predictions = sigmoid(X @ theta)
     cost = (-1 / m) * (y @ np.log(predictions) + (1 - y) @ np.log(1 - predictions))
     return cost
-     
+    
+
 def gradient_descent(X, y, theta, learning_rate=0.01, num_iterations=1000):
+    """
+        dl / dz = dl / dyhat * dyhat / dz
+        
+        dl / dyhat = -(y / yhat - (1 - y) / (1 - yhat))
+        = -(y * (1 - yhat) - (1 - y) * yhat) / (yhat * (1 - yhat))
+        = -(y - yhat) / (yhat * (1 - yhat))
+        
+        in the other hand 
+        dyhat / dz = yhat * (1 - yhat)
+        
+        dl / dz = -(y - yhat) / (yhat * (1 - yhat)) * yhat * (1 - yhat) = yhat - y
+        
+        dl / dw = dl / dz * dz / dw = (yhat - y) * x
+    """
     m = len(y)
     costs = []
     
@@ -114,12 +129,27 @@ def train_logestic_regression(X, y_encoded, unique_houses, learning_rate=0.01, n
         y = y_encoded[house]
         theta = np.zeros(num_features)
         
-        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations)
+        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations)        
         trained_models[house] = theta.tolist()
         
     return trained_models
     
 
+
+def save_model(model, feature_names, feature_means, feature_stds, unique_houses, output_file):
+    model_data = {
+        "feature_names": feature_names,
+        "feature_means": feature_means,
+        "feature_stds": feature_stds,
+        "houses": unique_houses,
+        "weights": model
+    }
+    
+    try:
+        with open(output_file, 'w') as file:
+            json.dump(model_data, file)
+    except Exception as e:
+        print(f"Error saving the model: {e}")
 
 def main(train_file, output_file="model_weights.json"):
     headers, rows, houses = load_dataset(train_file)
@@ -129,7 +159,7 @@ def main(train_file, output_file="model_weights.json"):
     print("Training the model...")
     trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000)
     
-    save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
+    # save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
     print(f"Model saved to {output_file}")
     
     
@@ -140,7 +170,7 @@ if __name__ == "__main__":
         print("Usage: python logreg_train.py <dataset_train.csv> [output_model.json]")
         sys.exit(1)
     
-    train_file = sys.argv[1]
+    train_file = sys.argv[1] if len(sys.argv) > 1 else "dataset_train.csv"
     output_file = sys.argv[2] if len(sys.argv) > 2 else "model_weights.json"
     
     main(train_file, output_file)
