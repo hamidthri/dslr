@@ -20,19 +20,91 @@ def load_model(model_file):
         return weights, feature_names, feature_means, feature_stds, houses
     except Exception as e:
         print(f"Error loading the model: {e}")
-        sys.exit(1)    
+        sys.exit(1)
 
 
-def load_test_data(test_file):
-    pass
+def load_test_data(test_file, feature_names):
+    try:
+        with open(test_file, 'r') as file:
+            reader = csv.reader(file)
+            headers = next(reader)
+            
+            feature_indices = {}
+            for feature in feature_names:
+                if feature in headers:
+                    feature_indices[feature] = headers.index(feature)
+                
+            index_col = headers.index("index") if "index" in headers else None
+            
+            rows = []
+            indices = []
+            
+            for row in reader:
+                if index_col is not None:
+                    indices.append(row[index_col])
+                else:
+                    indices.append(str(indices))
+                    
+                rows.append(row)
+                
+            return headers, rows, indices, feature_indices
+    except Exception as e:
+        print(f"Error loading the test data: {e}")
+        sys.exit(1)
+            
+            
 
-def preprocess_test_data(test_data):
-    pass
+def preprocess_test_data(rows, feature_indices, feature_means, feature_stds):
+    X = np.zeros((len(rows), len(feature_indices)))
+    for i, row in enumerate(rows):
+        for j, (feature, idx) in enumerate(feature_indices.items()):
+            try:
+                if idx < len(row) and row[idx]:
+                    X[i, j] = float(row[idx])
+                else:
+                    X[i, j] = 0
+            except ValueError:
+                X[i, j] = 0
+                
+    for col in range(X.shape[1]):
+        non_indices = np.isnan(X[:, col])
+        X[non_indices, col] = feature_means[col]
+        
+    X_norm = np.zeros_like(X)
+    for col in range(X.shape[1]):
+        X_norm[:, col] = (X[:, col] - feature_means[col]) / feature_stds[col]
+        
+    # add bias
+    X_norm = np.hstack((np.ones((X_norm.shape[0], 1)), X_norm))
+    return X_norm
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def predict(X, weights, houses):
+    predictions = []
+    probs = {}
+    for house in houses:
+        probs[house] = sigmoid(np.dot(X, weights[house]))
+
+    for i in range(X.shape[0]):
+        max_prob = -1
+        predicted_house = None
+        for house in houses:
+            if probs[house][i] > max_prob:
+                max_prob = probs[house][i]
+                predicted_house = house
+        predictions.append(predicted_house)
+    return predictions
+    
 
 def main():
     weights, feature_names, feature_means, feature_stds, houses = load_model(model_file)
-    _ = load_test_data(test_file)
-    preprocess_test_data(_)
+    header, rows, indices, feature_indices = load_test_data(test_file, feature_names)
+    X_norm = preprocess_test_data(rows, feature_indices, feature_means, feature_stds)
+    
+    # make predictions
+    predictions = predict(X_norm, weights, houses)
     
 
 if  __name__ == "__main__":
