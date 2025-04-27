@@ -96,7 +96,20 @@ def predict(X, weights, houses):
                 predicted_house = house
         predictions.append(predicted_house)
     return predictions
-    
+
+def save_predictions(indices, predictions, output_file="houses.csv"):
+    """Save predictions to a CSV file."""
+    try:
+        with open(output_file, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Index', 'Hogwarts House'])
+            
+            for idx, house in zip(indices, predictions):
+                writer.writerow([idx, house])
+        
+        print(f"Predictions saved to {output_file}")
+    except Exception as e:
+        print(f"Error saving predictions: {e}")
 
 def main():
     weights, feature_names, feature_means, feature_stds, houses = load_model(model_file)
@@ -105,6 +118,9 @@ def main():
     
     # make predictions
     predictions = predict(X_norm, weights, houses)
+    
+    # save predictions
+    save_predictions(indices, predictions, output_file)
     
 
 if  __name__ == "__main__":
