@@ -4,6 +4,7 @@ import numpy as np
 import json
 from typing import List, Tuple, Dict, Optional
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 import logging
@@ -199,12 +200,34 @@ def save_model(model: Dict[str, List[float]], feature_names: List[str], feature_
         print(f"Error saving the model: {e}")
 
 
+def evaluate_metrics_from_confusion(confusion_matrix: np.ndarray, class_names: list) -> Dict[str, Dict[str, float]]:
+    
+    num_classes = confusion_matrix.shape[0]
+    metrics = {}
+
+    for i in range(num_classes):
+        true_positives = confusion_matrix[i, i]
+        false_positives = np.sum(confusion_matrix[:, i]) - true_positives
+        false_negatives = np.sum(confusion_matrix[i, :]) - true_positives
+
+        precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0.0
+        recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0.0
+        f1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+
+        metrics[class_names[i]] = {
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1
+        }
+
+    return metrics
+
+
 def confusion_matrix_analysis(trained_model: Dict[str, List[float]], X_norm: np.ndarray,
-                              houses: List[str], unique_houses: List[str]) -> None:
+                              houses: List[str], unique_houses: List[str]) -> np.ndarray:
     confusion_matrix = np.zeros((len(unique_houses), len(unique_houses)), dtype=int)
 
     house_to_idx = {house: idx for idx, house in enumerate(unique_houses)}
-    print(f"House to index mapping: {house_to_idx}")
 
     for k in range(len(X_norm)):
         probs = {}
@@ -218,11 +241,40 @@ def confusion_matrix_analysis(trained_model: Dict[str, List[float]], X_norm: np.
         pred_idx = house_to_idx[predicted_house]
 
         confusion_matrix[true_idx, pred_idx] += 1
-    import pandas as pd
-
     df_conf = pd.DataFrame(confusion_matrix, index=unique_houses, columns=unique_houses)
     print("\nConfusion Matrix:")
     print(df_conf)
+    return confusion_matrix
+
+def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list) -> None:
+    fig, ax = plt.subplots(figsize=(6, 6))
+    cax = ax.matshow(confusion_matrix, cmap='Blues')
+    plt.colorbar(cax)
+
+    ax.set_xticks(range(len(class_names)))
+    ax.set_yticks(range(len(class_names)))
+    ax.set_xticklabels(class_names, rotation=45, ha='left')
+    ax.set_yticklabels(class_names)
+
+    ax.set_xlabel("Predicted Label")
+    ax.set_ylabel("True Label")
+    ax.set_title("Confusion Matrix")
+
+    # Add text annotations
+    for i in range(len(class_names)):
+        for j in range(len(class_names)):
+            value = confusion_matrix[i, j]
+            ax.text(j, i, str(value), va='center', ha='center', color='black' if value < confusion_matrix.max()/2 else 'white')
+
+    plt.tight_layout()
+    plt.show()
+
+def print_metrics_table(metrics: Dict[str, Dict[str, float]]):
+    df = pd.DataFrame(metrics).T
+    df = df[["precision", "recall", "f1_score"]]  # ensure column order
+    df.columns = ["Precision", "Recall", "F1 Score"]
+    print(df.round(3))
+
 
 def main(train_file: str, output_file: str="save/model_weights.json") -> None:
     headers, rows, houses = load_dataset(train_file)
@@ -231,7 +283,15 @@ def main(train_file: str, output_file: str="save/model_weights.json") -> None:
     print("Training the model...")
     trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000)
     
-    confusion_matrix_analysis(trained_model, X_norm, houses, unique_houses)
+    confusion_matrix = confusion_matrix_analysis(trained_model, X_norm, houses, unique_houses)
+    plot_confusion_matrix(confusion_matrix, unique_houses)
+    
+    print("\nMetrics from confusion matrix:")
+    metrics = evaluate_metrics_from_confusion(confusion_matrix, unique_houses)
+
+    print_metrics_table(metrics)
+
+    
     
     save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
     print(f"Model saved to {output_file}")
