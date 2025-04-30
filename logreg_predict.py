@@ -4,7 +4,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 import pandas as pd
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 
 def load_model(model_file):
     try:
@@ -16,10 +16,13 @@ def load_model(model_file):
         feature_means = model["feature_means"]
         feature_stds = model["feature_stds"]
         houses = model["houses"]
+        # Extract the training method if available, otherwise default to "batch"
+        training_method = model.get("training_method", "batch")
+        print(f"Training method used: {training_method}")
         
         for house in weights:
             weights[house] = np.array(weights[house])
-        return weights, feature_names, feature_means, feature_stds, houses
+        return weights, feature_names, feature_means, feature_stds, houses, training_method
     except Exception as e:
         print(f"Error loading the model: {e}")
         sys.exit(1)
@@ -83,9 +86,12 @@ def preprocess_test_data(rows, feature_indices, feature_means, feature_stds):
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-def predict(X, weights, houses):
+def predict(X, weights, houses, training_method="batch"):
     predictions = []
     probs = {}
+    
+    print(f"Making predictions using model trained with {training_method} method")
+    
     for house in houses:
         probs[house] = sigmoid(np.dot(X, weights[house]))
 
@@ -97,6 +103,7 @@ def predict(X, weights, houses):
                 max_prob = probs[house][i]
                 predicted_house = house
         predictions.append(predicted_house)
+    
     return predictions
 
 def save_predictions(indices, predictions, output_file="houses.csv"):
@@ -127,7 +134,7 @@ def test_confusion_matrix_analysis(predictions, true_labels, class_names):
     return confusion_matrix
 
 
-def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list) -> None:
+def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list, training_method: str = "batch") -> None:
     fig, ax = plt.subplots(figsize=(6, 6))
     cax = ax.matshow(confusion_matrix, cmap='Blues')
     plt.colorbar(cax)
@@ -139,7 +146,7 @@ def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list) -> No
 
     ax.set_xlabel("Predicted Label")
     ax.set_ylabel("True Label")
-    ax.set_title("Confusion Matrix")
+    ax.set_title(f"Confusion Matrix (Training Method: {training_method})")
 
     # Add text annotations
     for i in range(len(class_names)):
@@ -150,10 +157,11 @@ def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list) -> No
     plt.tight_layout()
     plt.show()
 
-def print_metrics_table(metrics: Dict[str, Dict[str, float]]):
+def print_metrics_table(metrics: Dict[str, Dict[str, float]], training_method: str = "batch"):
     df = pd.DataFrame(metrics).T
     df = df[["precision", "recall", "f1_score"]]  # ensure column order
     df.columns = ["Precision", "Recall", "F1 Score"]
+    print(f"\nMetrics (Training Method: {training_method}):")
     print(df.round(3))
     
 def evaluate_metrics_from_confusion(confusion_matrix: np.ndarray, class_names: list) -> Dict[str, Dict[str, float]]:
@@ -177,40 +185,43 @@ def evaluate_metrics_from_confusion(confusion_matrix: np.ndarray, class_names: l
         }
 
     return metrics
+
 def main(test_file, model_file, output_file):
-    weights, feature_names, feature_means, feature_stds, houses = load_model(model_file)
+    weights, feature_names, feature_means, feature_stds, houses, training_method = load_model(model_file)
     header, rows, indices, feature_indices = load_test_data(test_file, feature_names)
     X_norm = preprocess_test_data(rows, feature_indices, feature_means, feature_stds)
 
-    predictions = predict(X_norm, weights, houses)
+    predictions = predict(X_norm, weights, houses, training_method)
 
     # Save predictions to CSV
     save_predictions(indices, predictions, output_file)
 
     # Get true labels from test set
     house_index = header.index("Hogwarts House") if "Hogwarts House" in header else None
-    house_index = header.index("Hogwarts House") if "Hogwarts House" in header else None
 
     if house_index is not None:
         true_labels = [row[house_index].strip() for row in rows if len(row) > house_index and row[house_index].strip()]
         if true_labels:
             cm = test_confusion_matrix_analysis(predictions, true_labels, houses)
-            plot_confusion_matrix(cm, houses)
+            plot_confusion_matrix(cm, houses, training_method)
             print("\nMetrics from confusion matrix:")
             metrics = evaluate_metrics_from_confusion(cm, houses)
-            print_metrics_table(metrics)
+            print_metrics_table(metrics, training_method)
         else:
             print("No true labels present in test file — skipping evaluation.")
     else:
         print("Hogwarts House column not found — skipping evaluation.")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python logreg_predict.py <test_file> [model_file] [output_file]")
-        sys.exit(1)
-
-    test_file = sys.argv[1]
-    model_file = sys.argv[2] if len(sys.argv) > 2 else "save/model_weights.json"
-    output_file = sys.argv[3] if len(sys.argv) > 3 else "houses.csv"
+    import argparse
     
-    main(test_file, model_file, output_file)
+    parser = argparse.ArgumentParser(description='Make predictions using trained logistic regression model')
+    parser.add_argument('test_file', help='Path to test dataset CSV file')
+    parser.add_argument('-m', '--model', default="save/model_weights.json", 
+                       help='Path to the model file (default: save/model_weights.json)')
+    parser.add_argument('-o', '--output', default="houses.csv", 
+                       help='Path to save predictions CSV (default: houses.csv)')
+    
+    args = parser.parse_args()
+    
+    main(args.test_file, args.model, args.output)
