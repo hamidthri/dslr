@@ -164,18 +164,76 @@ def gradient_descent(X: np.ndarray, y: np.ndarray, theta: np.ndarray,
 
     return theta, costs
 
+def stochastic_gradient_descent(X: np.ndarray, y: np.ndarray, theta: np.ndarray,
+                               learning_rate: float, num_iterations: int, batch_size: int = 1,
+                               live_plot: bool = False, house_name: Optional[str] = None) -> Tuple[np.ndarray, List[float]]:
+    m = len(y)
+    costs = []
+    indices = np.arange(m)
+
+    if live_plot:
+        fig, ax = plt.subplots()
+        line, = ax.plot([], [], label=house_name)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Cost")
+        ax.set_title("Training Loss (SGD)")
+        ax.legend()
+        xs, ys = [], []
+
+    for i in range(num_iterations):
+        if i % (m // batch_size) == 0:
+            np.random.shuffle(indices)
+            
+        for j in range(0, m, batch_size):
+            batch_indices = indices[j:j+batch_size]
+            X_batch = X[batch_indices]
+            y_batch = y[batch_indices]
+            
+            predictions = sigmoid(X_batch @ theta)
+            errors = predictions - y_batch
+            gradient = (1 / len(batch_indices)) * (X_batch.T @ errors)
+            
+            theta -= learning_rate * gradient
+        
+        cost = compute_cost(X, y, theta)
+        costs.append(cost)
+        
+        if i % 50 == 0 and live_plot:
+            logging.info(f"SGD Iteration {i}: Cost = {cost}")
+            xs.append(i)
+            ys.append(cost)
+            line.set_xdata(xs)
+            line.set_ydata(ys)
+            ax.relim()
+            ax.autoscale_view()
+            plt.draw()
+            plt.pause(0.01)
+
+    if live_plot:
+        plt.ioff()
+        plt.show()
+
+    return theta, costs
            
         
 def train_logestic_regression(X: np.ndarray, y_encoded: Dict[str, np.ndarray], unique_houses: List[str],
-                             learning_rate: float=0.01, num_iterations: int=1000) -> Dict[str, List[float]]:
+                             learning_rate: float=0.01, num_iterations: int=1000, 
+                             method: str='batch', batch_size: int=32) -> Dict[str, List[float]]:
     num_features = X.shape[1]
     trained_models = {}
     
     for house in unique_houses:
         y = y_encoded[house]
         theta = np.zeros(num_features)
-        logging.info(f"Training for house: {house}")
-        theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations, live_plot=True, house_name=house)
+        logging.info(f"Training for house: {house} using method: {method}")
+        
+        if method.lower() == 'sgd':
+            theta, costs = stochastic_gradient_descent(X, y, theta, learning_rate, num_iterations, 
+                                                      batch_size=batch_size, live_plot=True, house_name=house)
+        else:
+            theta, costs = gradient_descent(X, y, theta, learning_rate, num_iterations, 
+                                           live_plot=True, house_name=house)
+            
         print(f"Final cost for {house}: {costs[-1]}")    
         trained_models[house] = theta.tolist()
         
@@ -184,13 +242,14 @@ def train_logestic_regression(X: np.ndarray, y_encoded: Dict[str, np.ndarray], u
 
 
 def save_model(model: Dict[str, List[float]], feature_names: List[str], feature_means: List[float],
-               feature_stds: List[float], unique_houses: List[str], output_file: str) -> None:
+               feature_stds: List[float], unique_houses: List[str], output_file: str, method: str = "batch") -> None:
     model_data = {
         "feature_names": feature_names,
         "feature_means": feature_means,
         "feature_stds": feature_stds,
         "houses": unique_houses,
-        "weights": model
+        "weights": model,
+        "training_method": method
     }
     
     try:
@@ -276,12 +335,14 @@ def print_metrics_table(metrics: Dict[str, Dict[str, float]]):
     print(df.round(3))
 
 
-def main(train_file: str, output_file: str="save/model_weights.json") -> None:
+def main(train_file: str, output_file: str="save/model_weights.json", method: str="batch", batch_size: int=32) -> None:
     headers, rows, houses = load_dataset(train_file)
     X_norm, y_encoded, feature_names, feature_means, feature_stds, unique_houses = preprocess_data(headers, rows, houses)
     
-    print("Training the model...")
-    trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, learning_rate=0.01, num_iterations=1000)
+    print(f"Training the model using {method} method...")
+    trained_model = train_logestic_regression(X_norm, y_encoded, unique_houses, 
+                                             learning_rate=0.01, num_iterations=1000,
+                                             method=method, batch_size=batch_size)
     
     confusion_matrix = confusion_matrix_analysis(trained_model, X_norm, houses, unique_houses)
     plot_confusion_matrix(confusion_matrix, unique_houses)
@@ -293,18 +354,25 @@ def main(train_file: str, output_file: str="save/model_weights.json") -> None:
 
     
     
-    save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file)
+    save_model(trained_model, feature_names, feature_means, feature_stds, unique_houses, output_file, method)
     print(f"Model saved to {output_file}")
     
     
     
 
 if __name__ == "__main__":
-    # if len(sys.argv) < 2:
-    #     print("Usage: python logreg_train.py <dataset_train.csv> [output_model.json]")
-    #     sys.exit(1)
+    import argparse
     
-    train_file = sys.argv[1] if len(sys.argv) > 1 else "datasets/dataset_train.csv"
-    output_file = sys.argv[2] if len(sys.argv) > 2 else "/Users/htaheri/Documents/GitHub/dslr/save/model_weights.json"
+    parser = argparse.ArgumentParser(description='Train logistic regression model for Hogwarts houses prediction')
+    parser.add_argument('train_file', nargs='?', default="datasets/dataset_train.csv", 
+                        help='Path to training dataset CSV file')
+    parser.add_argument('output_file', nargs='?', default="save/model_weights.json", 
+                        help='Path to save the model weights JSON file')
+    parser.add_argument('-m', '--method', choices=['batch', 'sgd'], default='batch', 
+                        help='Training method: batch (default) or sgd')
+    parser.add_argument('-b', '--batch_size', type=int, default=32, 
+                        help='Batch size for SGD (default: 32, ignored if method is batch)')
     
-    main(train_file, output_file)
+    args = parser.parse_args()
+    
+    main(args.train_file, args.output_file, args.method, args.batch_size)
