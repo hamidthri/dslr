@@ -106,9 +106,15 @@ def predict(X, weights, houses, training_method="batch"):
     
     return predictions
 
+import os
+
 def save_predictions(indices, predictions, output_file="houses.csv"):
     """Save predictions to a CSV file."""
     try:
+        output_dir = os.path.dirname(output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         with open(output_file, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['Index', 'Hogwarts House'])
@@ -204,7 +210,6 @@ def main(test_file, model_file, output_file):
         if true_labels:
             cm = test_confusion_matrix_analysis(predictions, true_labels, houses)
             plot_confusion_matrix(cm, houses, training_method)
-            print("\nMetrics from confusion matrix:")
             metrics = evaluate_metrics_from_confusion(cm, houses)
             print_metrics_table(metrics, training_method)
         else:
@@ -219,8 +224,8 @@ if __name__ == "__main__":
     parser.add_argument('test_file', help='Path to test dataset CSV file')
     parser.add_argument('-m', '--model', default="save/model_weights.json", 
                        help='Path to the model file (default: save/model_weights.json)')
-    parser.add_argument('-o', '--output', default="houses.csv", 
-                       help='Path to save predictions CSV (default: houses.csv)')
+    parser.add_argument('-o', '--output', default="prediction/houses.csv", 
+                       help='Path to save predictions CSV (default: prediction/houses.csv)')
     
     args = parser.parse_args()
     
