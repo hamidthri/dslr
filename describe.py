@@ -15,7 +15,7 @@ def read_csv(file_path):
                     try:
                         data[i].append(float(value))
                     except ValueError:
-                        data[i].append(None)
+                        data[i].append(value)
     except FileNotFoundError:
         print(f"Error: File {file_path} not found.")
         sys.exit(1)
@@ -156,3 +156,5 @@ if __name__ == "__main__":
 
     describe(sys.argv[1])
 
+
+## we need to use the train data and then for further we need test data only to predict the howards since its NUll
