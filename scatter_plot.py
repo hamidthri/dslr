@@ -64,7 +64,6 @@ def find_most_similar_features(headers, data):
         if not is_numeric_column(data[header]):
             non_numeric_columns.append(header)
     
-    # Get numeric columns
     for header in headers:
         if header not in non_numeric_columns:
             if any(isinstance(val, (int, float)) for val in data[header] if val is not None):
@@ -77,12 +76,10 @@ def find_most_similar_features(headers, data):
     max_correlation = 0
     best_pair = (None, None)
     
-    # Find the pair with highest absolute correlation
     for i in range(len(numeric_columns)):
         for j in range(i + 1, len(numeric_columns)):
             feature1, feature2 = numeric_columns[i], numeric_columns[j]
             
-            # Get valid pairs (both values are not None)
             valid_pairs = [(data[feature1][k], data[feature2][k]) 
                           for k in range(len(data[feature1])) 
                           if data[feature1][k] is not None and data[feature2][k] is not None]
@@ -110,7 +107,6 @@ def create_scatter_plot(headers, data):
     print(f"Most similar features: {feature1} and {feature2}")
     print(f"Correlation coefficient: {correlation:.4f}")
     
-    # Get valid data points
     valid_indices = [k for k in range(len(data[feature1])) 
                     if data[feature1][k] is not None and data[feature2][k] is not None]
     
@@ -126,7 +122,6 @@ def create_scatter_plot(headers, data):
             'Slytherin': 'green'
         }
         
-        # Plot each house with different colors
         for house in set(data['Hogwarts House']):
             if house is not None:
                 house_x = [data[feature1][k] for k in valid_indices 
@@ -149,12 +144,10 @@ def create_scatter_plot(headers, data):
               fontsize=14)
     plt.grid(True, alpha=0.3)
     
-    # Add trend line
     if len(valid_indices) > 1:
         x_vals = [data[feature1][k] for k in valid_indices]
         y_vals = [data[feature2][k] for k in valid_indices]
         
-        # Calculate trend line
         mean_x = sum(x_vals) / len(x_vals)
         mean_y = sum(y_vals) / len(y_vals)
         
