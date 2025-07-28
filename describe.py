@@ -156,3 +156,6 @@ if __name__ == "__main__":
         sys.exit(1)
         
     describe(sys.argv[1])
+
+
+## we need to use the train data and then for further we need test data only to predict the howards since its NUll
