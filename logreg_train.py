@@ -68,6 +68,8 @@ def preprocess_data(headers: List[str], rows: List[List[str]], houses: List[str]
     
     # convert to numpy array
     X = np.array(X)
+    print(f"DEBUG: X shape = {X.shape}, sample X[0] = {X[0] if len(X) > 0 else 'empty'}")
+
     # check for NaN values and replace them with mean of the column
     for col in range(X.shape[1]):
         col_mean = np.nanmean(X[:, col])
@@ -212,6 +214,7 @@ def stochastic_gradient_descent(X: np.ndarray, y: np.ndarray, theta: np.ndarray,
     if live_plot:
         plt.ioff()
         plt.show()
+        plt.savefig("loss.png", dpi=300)
 
     return theta, costs
            
@@ -327,6 +330,7 @@ def plot_confusion_matrix(confusion_matrix: np.ndarray, class_names: list) -> No
 
     plt.tight_layout()
     plt.show()
+    plt.savefig("confusion_matrix.png", dpi=300)
 
 def print_metrics_table(metrics: Dict[str, Dict[str, float]]):
     df = pd.DataFrame(metrics).T
@@ -337,6 +341,7 @@ def print_metrics_table(metrics: Dict[str, Dict[str, float]]):
 
 def main(train_file: str, output_file: str="save/model_weights.json", method: str="batch", batch_size: int=32) -> None:
     headers, rows, houses = load_dataset(train_file)
+    print (f"Loaded {len(rows)} rows from {train_file} with {len(headers)} headers.")
     X_norm, y_encoded, feature_names, feature_means, feature_stds, unique_houses = preprocess_data(headers, rows, houses)
     
     print(f"Training the model using {method} method...")

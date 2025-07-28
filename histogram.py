@@ -109,7 +109,7 @@ def find_homogeneous_courses(headers, houses_data, non_course_columns=None):
     return sorted_courses, course_data
 
 
-def plot_histograms_for_top_courses(headers, houses_data, top_n=5, bins=None, figsize=(10, 6), output_prefix=None, show_plot=True):
+def plot_histograms_for_top_courses(headers, houses_data, top_n=5, bins=None, figsize=(10, 6), output_prefix=True, show_plot=True):
     sorted_courses, _ = find_homogeneous_courses(headers, houses_data)
     if not sorted_courses:
         print("No homogeneous courses found.")
