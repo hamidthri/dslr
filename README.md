@@ -32,16 +32,16 @@ Implements statistical analysis without using built-in functions like `pandas.de
 Identifies which Hogwarts course has the most homogeneous score distribution across all four houses.
 
 ![Histogram Analysis](images/histogram.PNG)
-<!-- 
+
 #### Scatter Plot Analysis (`scatter_plot.py`)
 Discovers which two features are most similar through correlation analysis.
 
-![Scatter Plot Analysis](images/scatter_plot_results.png)
+![Scatter Plot Analysis](images/scatter_plot.png)
 
-#### Pair Plot (`pair_plot.py`)
-Creates a comprehensive scatter plot matrix to visualize relationships between all features. -->
+### Pair Plot (`pair_plot.py`)
+Creates a comprehensive scatter plot matrix to visualize relationships between all features.
 
-<!-- ![Pair Plot Matrix](images/pair_plot_results.png) -->
+![Pair Plot Matrix](images/pair_plot.png)
 
 ### 3. Logistic Regression Implementation
 
