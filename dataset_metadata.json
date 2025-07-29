@@ -1,0 +1,568 @@
+{
+  "dataset_info": {
+    "total_records": 1600,
+    "total_columns": 19,
+    "column_names": [
+      "Index",
+      "Hogwarts House",
+      "First Name",
+      "Last Name",
+      "Birthday",
+      "Best Hand",
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination",
+      "Muggle Studies",
+      "Ancient Runes",
+      "History of Magic",
+      "Transfiguration",
+      "Potions",
+      "Care of Magical Creatures",
+      "Charms",
+      "Flying"
+    ],
+    "memory_usage_mb": 0.6
+  },
+  "data_types": {
+    "Index": "int64",
+    "Hogwarts House": "object",
+    "First Name": "object",
+    "Last Name": "object",
+    "Birthday": "object",
+    "Best Hand": "object",
+    "Arithmancy": "float64",
+    "Astronomy": "float64",
+    "Herbology": "float64",
+    "Defense Against the Dark Arts": "float64",
+    "Divination": "float64",
+    "Muggle Studies": "float64",
+    "Ancient Runes": "float64",
+    "History of Magic": "float64",
+    "Transfiguration": "float64",
+    "Potions": "float64",
+    "Care of Magical Creatures": "float64",
+    "Charms": "float64",
+    "Flying": "float64"
+  },
+  "missing_values": {
+    "total_missing": 386,
+    "missing_by_column": {
+      "Index": 0,
+      "Hogwarts House": 0,
+      "First Name": 0,
+      "Last Name": 0,
+      "Birthday": 0,
+      "Best Hand": 0,
+      "Arithmancy": 34,
+      "Astronomy": 32,
+      "Herbology": 33,
+      "Defense Against the Dark Arts": 31,
+      "Divination": 39,
+      "Muggle Studies": 35,
+      "Ancient Runes": 35,
+      "History of Magic": 43,
+      "Transfiguration": 34,
+      "Potions": 30,
+      "Care of Magical Creatures": 40,
+      "Charms": 0,
+      "Flying": 0
+    },
+    "missing_percentage_by_column": {
+      "Index": 0.0,
+      "Hogwarts House": 0.0,
+      "First Name": 0.0,
+      "Last Name": 0.0,
+      "Birthday": 0.0,
+      "Best Hand": 0.0,
+      "Arithmancy": 2.12,
+      "Astronomy": 2.0,
+      "Herbology": 2.06,
+      "Defense Against the Dark Arts": 1.94,
+      "Divination": 2.44,
+      "Muggle Studies": 2.19,
+      "Ancient Runes": 2.19,
+      "History of Magic": 2.69,
+      "Transfiguration": 2.12,
+      "Potions": 1.88,
+      "Care of Magical Creatures": 2.5,
+      "Charms": 0.0,
+      "Flying": 0.0
+    }
+  },
+  "column_types": {
+    "numeric_columns": [
+      "Index",
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination",
+      "Muggle Studies",
+      "Ancient Runes",
+      "History of Magic",
+      "Transfiguration",
+      "Potions",
+      "Care of Magical Creatures",
+      "Charms",
+      "Flying"
+    ],
+    "categorical_columns": [
+      "Hogwarts House",
+      "First Name",
+      "Last Name",
+      "Birthday",
+      "Best Hand"
+    ],
+    "numeric_count": 14,
+    "categorical_count": 5
+  },
+  "viz_categories": {
+    "identifiers": [
+      "Index",
+      "First Name",
+      "Last Name"
+    ],
+    "grouping_vars": [
+      "Hogwarts House",
+      "Best Hand"
+    ],
+    "measurement_vars": [
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination",
+      "Muggle Studies",
+      "Ancient Runes",
+      "History of Magic",
+      "Transfiguration",
+      "Potions",
+      "Care of Magical Creatures",
+      "Charms",
+      "Flying"
+    ],
+    "date_vars": [
+      "Birthday"
+    ],
+    "subject_vars": [
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination",
+      "Muggle Studies",
+      "Ancient Runes",
+      "History of Magic",
+      "Transfiguration",
+      "Potions",
+      "Care of Magical Creatures",
+      "Charms",
+      "Flying"
+    ]
+  },
+  "numeric_statistics": {
+    "Index": {
+      "min": 0.0,
+      "max": 1599.0,
+      "mean": 799.5,
+      "median": 799.5,
+      "std": 462.0245303732981,
+      "unique_values": 1600,
+      "zero_values": 1,
+      "negative_values": 0
+    },
+    "Arithmancy": {
+      "min": -24370.0,
+      "max": 104956.0,
+      "mean": 49634.57024265645,
+      "median": 49013.5,
+      "std": 16679.806035559308,
+      "unique_values": 1540,
+      "zero_values": 0,
+      "negative_values": 5
+    },
+    "Astronomy": {
+      "min": -966.7405456412164,
+      "max": 1016.211940387396,
+      "mean": 39.79713089016475,
+      "median": 260.2894464246512,
+      "std": 520.2982676051708,
+      "unique_values": 1568,
+      "zero_values": 0,
+      "negative_values": 727
+    },
+    "Herbology": {
+      "min": -10.295662748653244,
+      "max": 11.612895082210851,
+      "mean": 1.1410195296768046,
+      "median": 3.4690121044769087,
+      "std": 5.2196819935318235,
+      "unique_values": 1567,
+      "zero_values": 0,
+      "negative_values": 603
+    },
+    "Defense Against the Dark Arts": {
+      "min": -10.16211940387396,
+      "max": 9.667405456412162,
+      "mean": -0.38786349744178633,
+      "median": -2.5893416144228647,
+      "std": 5.212793707585853,
+      "unique_values": 1569,
+      "zero_values": 0,
+      "negative_values": 840
+    },
+    "Divination": {
+      "min": -8.727,
+      "max": 10.032,
+      "mean": 3.1539096732863547,
+      "median": 4.624,
+      "std": 4.155300897977581,
+      "unique_values": 1421,
+      "zero_values": 0,
+      "negative_values": 286
+    },
+    "Muggle Studies": {
+      "min": -1086.4968348887985,
+      "max": 1092.3886105728684,
+      "mean": -224.58991486346417,
+      "median": -419.16429373366526,
+      "std": 486.34483965206664,
+      "unique_values": 1565,
+      "zero_values": 0,
+      "negative_values": 1129
+    },
+    "Ancient Runes": {
+      "min": 283.8696087336624,
+      "max": 745.3962198761234,
+      "mean": 495.74797005915786,
+      "median": 463.9183051467133,
+      "std": 106.28516457845274,
+      "unique_values": 1565,
+      "zero_values": 0,
+      "negative_values": 0
+    },
+    "History of Magic": {
+      "min": -8.858992991610515,
+      "max": 11.889712754042709,
+      "mean": 2.9630946151165936,
+      "median": 4.378175538816984,
+      "std": 4.425774656123574,
+      "unique_values": 1557,
+      "zero_values": 0,
+      "negative_values": 320
+    },
+    "Transfiguration": {
+      "min": 906.6273196915248,
+      "max": 1098.9582005409077,
+      "mean": 1030.0969463871306,
+      "median": 1045.5069962908478,
+      "std": 44.12511586678024,
+      "unique_values": 1566,
+      "zero_values": 0,
+      "negative_values": 0
+    },
+    "Potions": {
+      "min": -4.697483767872527,
+      "max": 13.53676212499442,
+      "mean": 5.950372992780089,
+      "median": 5.874837348493016,
+      "std": 3.14785425039337,
+      "unique_values": 1570,
+      "zero_values": 0,
+      "negative_values": 39
+    },
+    "Care of Magical Creatures": {
+      "min": -3.313675764124477,
+      "max": 3.0565457738978123,
+      "mean": -0.0534271367004963,
+      "median": -0.0448110498901474,
+      "std": 0.9714569677256252,
+      "unique_values": 1560,
+      "zero_values": 0,
+      "negative_values": 803
+    },
+    "Charms": {
+      "min": -261.04892,
+      "max": -225.42814,
+      "mean": -243.3744090125,
+      "median": -244.86776500000002,
+      "std": 8.783639876017117,
+      "unique_values": 1600,
+      "zero_values": 0,
+      "negative_values": 1600
+    },
+    "Flying": {
+      "min": -181.47,
+      "max": 279.07,
+      "mean": 21.9580125,
+      "median": -2.5149999999999997,
+      "std": 97.63160206806158,
+      "unique_values": 1546,
+      "zero_values": 0,
+      "negative_values": 837
+    }
+  },
+  "categorical_statistics": {
+    "Hogwarts House": {
+      "unique_values": 4,
+      "most_frequent": "Hufflepuff",
+      "most_frequent_count": 529,
+      "value_distribution": {
+        "Hufflepuff": 529,
+        "Ravenclaw": 443,
+        "Gryffindor": 327,
+        "Slytherin": 301
+      }
+    },
+    "First Name": {
+      "unique_values": 1215,
+      "most_frequent": "Tiffany",
+      "most_frequent_count": 6,
+      "value_distribution": {
+        "Tiffany": 6,
+        "Laverne": 5,
+        "Marty": 5,
+        "Joseph": 5,
+        "Vickie": 4,
+        "Leonard": 4,
+        "Wallace": 4,
+        "Gena": 4,
+        "Jessie": 4,
+        "Jung": 4
+      }
+    },
+    "Last Name": {
+      "unique_values": 1378,
+      "most_frequent": "Stewart",
+      "most_frequent_count": 4,
+      "value_distribution": {
+        "Stewart": 4,
+        "Easterling": 3,
+        "Penny": 3,
+        "Kersey": 3,
+        "Day": 3,
+        "Graham": 3,
+        "Sharpe": 3,
+        "Sawyers": 3,
+        "Allen": 3,
+        "Ashworth": 3
+      }
+    },
+    "Birthday": {
+      "unique_values": 1065,
+      "most_frequent": "1998-06-12",
+      "most_frequent_count": 6,
+      "value_distribution": {
+        "1998-06-12": 6,
+        "1997-11-18": 5,
+        "1998-09-30": 5,
+        "1997-05-13": 5,
+        "1998-05-10": 5,
+        "1997-05-27": 5,
+        "1998-07-26": 4,
+        "1998-11-05": 4,
+        "1997-09-23": 4,
+        "1997-06-29": 4
+      }
+    },
+    "Best Hand": {
+      "unique_values": 2,
+      "most_frequent": "Right",
+      "most_frequent_count": 810,
+      "value_distribution": {
+        "Right": 810,
+        "Left": 790
+      }
+    }
+  },
+  "date_analysis": {
+    "date_range": {
+      "earliest": "1996-11-08",
+      "latest": "2001-11-04"
+    },
+    "birth_year_distribution": {
+      "1997": 349,
+      "1999": 330,
+      "2000": 324,
+      "1998": 308,
+      "2001": 249,
+      "1996": 40
+    }
+  },
+  "subject_performance": {
+    "Arithmancy": {
+      "average_score": 49634.57024265645,
+      "performance_range": 129326.0,
+      "students_above_average": 764,
+      "top_score": 104956.0,
+      "lowest_score": -24370.0
+    },
+    "Astronomy": {
+      "average_score": 39.79713089016475,
+      "performance_range": 1982.9524860286124,
+      "students_above_average": 840,
+      "top_score": 1016.211940387396,
+      "lowest_score": -966.7405456412164
+    },
+    "Herbology": {
+      "average_score": 1.1410195296768046,
+      "performance_range": 21.908557830864098,
+      "students_above_average": 957,
+      "top_score": 11.612895082210851,
+      "lowest_score": -10.295662748653244
+    },
+    "Defense Against the Dark Arts": {
+      "average_score": -0.38786349744178633,
+      "performance_range": 19.82952486028612,
+      "students_above_average": 730,
+      "top_score": 9.667405456412162,
+      "lowest_score": -10.16211940387396
+    },
+    "Divination": {
+      "average_score": 3.1539096732863547,
+      "performance_range": 18.759,
+      "students_above_average": 1163,
+      "top_score": 10.032,
+      "lowest_score": -8.727
+    },
+    "Muggle Studies": {
+      "average_score": -224.58991486346417,
+      "performance_range": 2178.8854454616667,
+      "students_above_average": 495,
+      "top_score": 1092.3886105728684,
+      "lowest_score": -1086.4968348887985
+    },
+    "Ancient Runes": {
+      "average_score": 495.74797005915786,
+      "performance_range": 461.526611142461,
+      "students_above_average": 754,
+      "top_score": 745.3962198761234,
+      "lowest_score": 283.8696087336624
+    },
+    "History of Magic": {
+      "average_score": 2.9630946151165936,
+      "performance_range": 20.748705745653226,
+      "students_above_average": 1090,
+      "top_score": 11.889712754042709,
+      "lowest_score": -8.858992991610515
+    },
+    "Transfiguration": {
+      "average_score": 1030.0969463871306,
+      "performance_range": 192.33088084938288,
+      "students_above_average": 1135,
+      "top_score": 1098.9582005409077,
+      "lowest_score": 906.6273196915248
+    },
+    "Potions": {
+      "average_score": 5.950372992780089,
+      "performance_range": 18.234245892866948,
+      "students_above_average": 774,
+      "top_score": 13.53676212499442,
+      "lowest_score": -4.697483767872527
+    },
+    "Care of Magical Creatures": {
+      "average_score": -0.0534271367004963,
+      "performance_range": 6.370221538022289,
+      "students_above_average": 785,
+      "top_score": 3.0565457738978123,
+      "lowest_score": -3.313675764124477
+    },
+    "Charms": {
+      "average_score": -243.3744090125,
+      "performance_range": 35.620779999999996,
+      "students_above_average": 592,
+      "top_score": -225.42814,
+      "lowest_score": -261.04892
+    },
+    "Flying": {
+      "average_score": 21.9580125,
+      "performance_range": 460.53999999999996,
+      "students_above_average": 550,
+      "top_score": 279.07,
+      "lowest_score": -181.47
+    }
+  },
+  "house_analysis": {
+    "Ravenclaw": {
+      "student_count": 443,
+      "average_overall_performance": 3694.387657337856,
+      "best_subject": "Arithmancy",
+      "best_subject_score": 49446.34570765661
+    },
+    "Slytherin": {
+      "student_count": 301,
+      "average_overall_performance": 3596.666673587013,
+      "best_subject": "Arithmancy",
+      "best_subject_score": 49374.80677966102
+    },
+    "Gryffindor": {
+      "student_count": 327,
+      "average_overall_performance": 3668.9385827344836,
+      "best_subject": "Arithmancy",
+      "best_subject_score": 49121.99685534591
+    },
+    "Hufflepuff": {
+      "student_count": 529,
+      "average_overall_performance": 3732.039114621366,
+      "best_subject": "Arithmancy",
+      "best_subject_score": 50249.04022988506
+    }
+  },
+  "data_quality": {
+    "completeness_score": 98.73,
+    "duplicate_rows": 0,
+    "columns_with_missing_data": 11,
+    "data_integrity_issues": []
+  },
+  "visualization_recommendations": {
+    "distribution_plots": [
+      "Index",
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts"
+    ],
+    "categorical_plots": [
+      "Hogwarts House",
+      "First Name",
+      "Last Name",
+      "Birthday",
+      "Best Hand"
+    ],
+    "correlation_analysis": [
+      "Index",
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination",
+      "Muggle Studies",
+      "Ancient Runes",
+      "History of Magic",
+      "Transfiguration",
+      "Potions",
+      "Care of Magical Creatures",
+      "Charms",
+      "Flying"
+    ],
+    "time_series_potential": [
+      "Birthday"
+    ],
+    "grouping_variables": [
+      "Hogwarts House",
+      "First Name",
+      "Last Name",
+      "Birthday",
+      "Best Hand"
+    ],
+    "top_subjects_for_comparison": [
+      "Arithmancy",
+      "Astronomy",
+      "Herbology",
+      "Defense Against the Dark Arts",
+      "Divination"
+    ]
+  }
+}
