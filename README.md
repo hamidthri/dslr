@@ -116,7 +116,7 @@ Creates a comprehensive scatter plot matrix to visualize relationships between a
 
 ```bash
    python logreg_train.py dataset_train.csv
-
+```
 Confusion matrix and metrics are plotted to visualize training progress as below:
 
 ![Training Confusion Matrix](images/confusion_matrix.png)
